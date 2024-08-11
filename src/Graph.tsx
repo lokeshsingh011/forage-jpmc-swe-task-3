@@ -6,20 +6,26 @@ import './Graph.css';
 
 interface IProps {
   data: ServerRespond[],
+  upperBound: number,
+  lowerBound: number,
 }
 
 interface PerspectiveViewerElement extends HTMLElement {
   load: (table: Table) => void,
 }
+
 class Graph extends Component<IProps, {}> {
   table: Table | undefined;
 
   render() {
-    return React.createElement('perspective-viewer');
+    return (
+      <div>
+        <perspective-viewer></perspective-viewer>
+      </div>
+    );
   }
 
   componentDidMount() {
-    // Get element from the DOM.
     const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
     const schema = {
@@ -33,7 +39,6 @@ class Graph extends Component<IProps, {}> {
       this.table = window.perspective.worker().table(schema);
     }
     if (this.table) {
-      // Load the `table` in the `<perspective-viewer>` DOM reference.
       elem.load(this.table);
       elem.setAttribute('view', 'y_line');
       elem.setAttribute('column-pivots', '["stock"]');
@@ -50,9 +55,20 @@ class Graph extends Component<IProps, {}> {
 
   componentDidUpdate() {
     if (this.table) {
-      this.table.update(
-        DataManipulator.generateRow(this.props.data),
-      );
+      this.table.update(DataManipulator.generateRow(this.props.data));
+      this.checkBounds();
+    }
+  }
+
+  checkBounds() {
+    const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
+
+    // Assuming you have a method to get the current data from the perspective-viewer
+    const currentData = elem.getAttribute('view'); // Update based on actual method to get data
+
+    // Check if the current data exceeds bounds
+    if (currentData > this.props.upperBound || currentData < this.props.lowerBound) {
+      alert('Alert: Ratio has crossed the defined bounds!');
     }
   }
 }

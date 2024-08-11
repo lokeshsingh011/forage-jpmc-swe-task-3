@@ -1,31 +1,28 @@
-export interface Order {
-  price: number,
-  size: number,
-}
+// DataStreamer.ts
 export interface ServerRespond {
-  stock: string,
-  top_bid: Order,
-  top_ask: Order,
-  timestamp: Date,
+  stock: string;
+  top_ask_price: number;
+  top_bid_price: number;
+  timestamp: Date;
 }
 
-class DataStreamer {
-  static API_URL: string = 'http://localhost:8080/query?id=1';
-
-  static getData(callback: (data: ServerRespond[]) => void): void {
+export default class DataStreamer {
+  static getData(callback: (data: ServerRespond[]) => void) {
     const request = new XMLHttpRequest();
-    request.open('GET', DataStreamer.API_URL, false);
-
-    request.onload = () => {
-      if (request.status === 200) {
-        callback(JSON.parse(request.responseText));
+    request.open('GET', 'http://localhost:8080/query?id=1', true);
+    request.onload = function () {
+      if (this.status >= 200 && this.status < 400) {
+        // Success!
+        const data = JSON.parse(this.responseText) as ServerRespond[];
+        callback(data);
       } else {
-        alert ('Request failed');
+        // Error
+        console.error('Failed to load data:', this.responseText);
       }
-    }
-
+    };
+    request.onerror = function () {
+      console.error('Request error');
+    };
     request.send();
   }
 }
-
-export default DataStreamer;

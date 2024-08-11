@@ -19,7 +19,13 @@ class App extends Component<{}, IState> {
 
   renderGraph() {
     if (this.state.showGraph) {
-      return (<Graph data={this.state.data}/>)
+      return (
+        <Graph
+          data={this.state.data}
+          upperBound={1.2} // Replace with actual value or logic to determine upper bound
+          lowerBound={0.8} // Replace with actual value or logic to determine lower bound
+        />
+      );
     }
   }
 
@@ -46,13 +52,15 @@ class App extends Component<{}, IState> {
           Bank Merge & Co Task 3
         </header>
         <div className="App-content">
-          <button className="btn btn-primary Stream-button" onClick={() => {this.getDataFromServer()}}>Start Streaming Data</button>
+          <button className="btn btn-primary Stream-button" onClick={() => { this.getDataFromServer() }}>
+            Start Streaming Data
+          </button>
           <div className="Graph">
             {this.renderGraph()}
           </div>
         </div>
       </div>
-    )
+    );
   }
 }
 
